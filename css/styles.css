@@ -264,7 +264,10 @@ body {
     display: none; /* Hide text in buttons and user info */
 }
 .header.scrolled .header-actions.icons-only {
-    gap: 0.5rem; /* Reduce gap when only icons */
+    gap: 0.3rem; /* Reduce gap further when only icons */
+    flex-wrap: nowrap; /* Prevent wrapping of icons on very small screens if header is too narrow */
+    overflow-x: auto; /* Allow horizontal scrolling if icons overflow, though ideally they fit */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .header-content {
@@ -331,6 +334,11 @@ body {
     background: rgba(255,255,255,0.2);
     padding: 0.5rem 1rem;
     border-radius: 25px;
+}
+
+.header.scrolled .user-info {
+    padding: 0.3rem 0.6rem; /* Smaller padding for user-info when scrolled */
+    font-size: 0.8rem; /* Smaller font for user-info icon when scrolled */
 }
 
 /* ==========================================
@@ -408,15 +416,16 @@ body {
     overflow-x: auto;
     padding-bottom: 0.5rem;
 }
+
 /* Styles for sticky category section */
 #categorySection.sticky-active {
     position: -webkit-sticky; /* For Safari */
     position: sticky;
     /* 'top' will be set by JavaScript based on header height */
     z-index: 99; /* Below header (z-index: 100) */
-    background-color: #f5f5f5; /* Match body background or use white */
+    background-color: var(--sticky-category-bg, #f5f5f5); /* Use CSS variable for dark mode compatibility */
     padding-top: 1rem; /* Add some padding when sticky */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Shadow to indicate it's layered */
+    box-shadow: 0 2px 8px var(--sticky-category-shadow, rgba(0,0,0,0.08));
 }
 
 .category-tab {
@@ -980,7 +989,7 @@ body {
         font-size: 0.9rem;
     }
     
-    .header-nav {
+    .header-actions { /* Ensure this matches the class in HTML */
         flex-wrap: wrap;
         gap: 0.5rem;
     }
@@ -1075,6 +1084,8 @@ body {
 body.dark-mode {
     background-color: #1a1a1a;
     color: #e0e0e0;
+    --sticky-category-bg: #252525; /* Darker background for sticky category in dark mode */
+    --sticky-category-shadow: rgba(255,255,255,0.05);
 }
 
 .dark-mode .header {

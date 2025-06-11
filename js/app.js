@@ -131,20 +131,21 @@ const OrderSystem = {
                 const scrollPosition = window.scrollY;
 
                 if (scrollPosition > 50) { // Threshold for shrinking header
-                    if (!header.classList.contains('scrolled')) {
-                        header.classList.add('scrolled');
-                        headerActions.classList.add('icons-only');
-                    }
-                    const shrunkenHeaderHeight = header.offsetHeight; // Get height of shrunken header
+                    header.classList.add('scrolled');
+                    headerActions.classList.add('icons-only');
+
+                    // Make category section sticky below the shrunken header
+                    const shrunkenHeaderHeight = header.offsetHeight;
                     if (!categorySection.classList.contains('sticky-active')) {
                         categorySection.classList.add('sticky-active');
                     }
                     categorySection.style.top = `${shrunkenHeaderHeight}px`;
+
                 } else {
-                    if (header.classList.contains('scrolled')) {
-                        header.classList.remove('scrolled');
-                        headerActions.classList.remove('icons-only');
-                    }
+                    header.classList.remove('scrolled');
+                    headerActions.classList.remove('icons-only');
+
+                    // Unstick category section
                     if (categorySection.classList.contains('sticky-active')) {
                         categorySection.classList.remove('sticky-active');
                         categorySection.style.top = '0px'; // Reset top value
