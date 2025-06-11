@@ -206,7 +206,9 @@ const OrderSystemOrders = {
                 return `
                 <div class="product-card" onclick="OrderSystemCart.incrementProductQuantity('${product.id}')">
                     <div class="quantity-badge ${quantity > 0 ? 'visible' : ''}" id="product-card-top-badge-${product.id}">${quantity}</div>
-                    <div class="product-image">${product.icon || '📦'}</div>
+                    <div class="product-image">
+                        ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}">` : (product.icon || '📦')}
+                    </div>
                     <div class="product-info">
                         <div class="product-name-unit-wrapper">
                             <span class="product-name">${product.name}</span>

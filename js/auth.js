@@ -1,5 +1,6 @@
 // Authentication Module
 const OrderSystemAuth = {
+    tempSelectedUser: null, // To store user temporarily before PIN verification
     renderUserSelection() {
         const grid = document.getElementById('usersGrid');
         const searchTerm = document.getElementById('userSearch').value.toLowerCase();
@@ -47,10 +48,53 @@ const OrderSystemAuth = {
     searchUsers() {
         this.renderUserSelection();
     },
-    
+
     selectUser(userId) {
         const user = OrderSystem.data.users.find(u => u.id === userId);
         if (user) {
+            this.tempSelectedUser = user;
+            document.getElementById('pinModalTitle').textContent = `สวัสดี ${user.name}, กรุณาใส่รหัส PIN`;
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinError').style.display = 'none';
+            document.getElementById('pinModal').style.display = 'block';
+            document.getElementById('pinInput').focus();
+        }
+    },
+
+    closePinModal() {
+        document.getElementById('pinModal').style.display = 'none';
+        this.tempSelectedUser = null;
+    },
+
+    submitPin() {
+        const pinEntered = document.getElementById('pinInput').value;
+        const pinErrorDiv = document.getElementById('pinError');
+
+        if (!this.tempSelectedUser || !this.tempSelectedUser.pin) {
+            pinErrorDiv.textContent = 'เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้ใช้หรือ PIN';
+            pinErrorDiv.style.display = 'block';
+            return;
+        }
+
+        if (pinEntered === String(this.tempSelectedUser.pin)) { // Compare PIN
+            this.completeLogin(this.tempSelectedUser);
+            this.closePinModal();
+        } else {
+            pinErrorDiv.textContent = 'รหัส PIN ไม่ถูกต้อง';
+            pinErrorDiv.style.display = 'block';
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinInput').focus();
+            // Add shake animation to modal or input for better UX
+            const pinModalContent = document.querySelector('#pinModal .cart-content');
+            if(pinModalContent) {
+                pinModalContent.classList.add('shake-animation');
+                setTimeout(() => pinModalContent.classList.remove('shake-animation'), 500);
+            }
+        }
+    },
+
+    completeLogin(user) { // New function to handle login after PIN success
+        if (user) { // Ensure user is still valid
             OrderSystem.state.currentUser = user;
             OrderSystem.state.selectedDepartment = user.department;
             
@@ -92,12 +136,25 @@ const OrderSystemAuth = {
         document.getElementById('mainApp').classList.add('hidden');
         document.getElementById('userSearch').value = '';
         document.getElementById('departmentFilter').value = 'all';
+        this.closePinModal(); // Ensure PIN modal is closed on logout
         document.getElementById('adminBtn').classList.add('hidden'); // Changed to adminBtn
         OrderSystemOrders.resetOrderState();
         OrderSystemStorage.saveUserPreferences();
         this.renderUserSelection();
     }
 };
+
+// Add event listener for Enter key in PIN input
+document.addEventListener('DOMContentLoaded', () => {
+    const pinInput = document.getElementById('pinInput');
+    if (pinInput) {
+        pinInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                OrderSystemAuth.submitPin();
+            }
+        });
+    }
+});
 
 // Expose to global for onclick handlers
 window.OrderSystemAuth = OrderSystemAuth;

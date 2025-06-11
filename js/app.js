@@ -126,13 +126,15 @@ const OrderSystem = {
         const categorySection = document.getElementById('categorySection');
         const headerActions = document.querySelector('.header-actions');
 
-        if (header && categorySection && headerActions) {
+        if (header && categorySection) { // Removed headerActions from this initial check
             window.addEventListener('scroll', function() {
                 const scrollPosition = window.scrollY;
 
                 if (scrollPosition > 50) { // Threshold for shrinking header
                     header.classList.add('scrolled');
-                    headerActions.classList.add('icons-only');
+                    if (headerActions) { // Check if headerActions exists before modifying
+                        headerActions.classList.add('icons-only');
+                    }
 
                     // Make category section sticky below the shrunken header
                     const shrunkenHeaderHeight = header.offsetHeight;
@@ -140,10 +142,11 @@ const OrderSystem = {
                         categorySection.classList.add('sticky-active');
                     }
                     categorySection.style.top = `${shrunkenHeaderHeight}px`;
-
                 } else {
                     header.classList.remove('scrolled');
-                    headerActions.classList.remove('icons-only');
+                    if (headerActions) { // Check if headerActions exists before modifying
+                        headerActions.classList.remove('icons-only');
+                    }
 
                     // Unstick category section
                     if (categorySection.classList.contains('sticky-active')) {
