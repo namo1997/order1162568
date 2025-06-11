@@ -56,37 +56,86 @@ const OrderSystem = {
         const originalTitle = loginBox.querySelector('.login-title').textContent;
         loginBox.querySelector('.login-title').textContent = 'กำลังโหลดข้อมูล...';
 
+        const dataToLoadConfig = [
+            { key: 'users', sheetName: 'Users', ttl: 6 * 60 * 60 * 1000 },
+            { key: 'departments', sheetName: 'Departments', ttl: 24 * 60 * 60 * 1000 },
+            // { key: 'categories', sheetName: 'Categories', ttl: 24 * 60 * 60 * 1000 }, // Defer loading
+            // { key: 'products', sheetName: 'Products', ttl: 6 * 60 * 60 * 1000 },   // Defer loading
+            { key: 'orderDates', sheetName: 'OrderDates', ttl: 15 * 60 * 1000 }, // 15 minutes
+            { key: 'units', sheetName: 'Units', ttl: 24 * 60 * 60 * 1000 }
+        ];
+
         try {
-            const dataPromises = [
-                OrderSystemAPI.fetchData('Users'), 
-                OrderSystemAPI.fetchData('Departments'), 
-                OrderSystemAPI.fetchData('Categories'),
-                OrderSystemAPI.fetchData('Products'), 
-                OrderSystemAPI.fetchData('OrderDates'), 
-                OrderSystemAPI.fetchData('Units')
-            ];
-            
-            [
-                this.data.users, 
-                this.data.departments, 
-                this.data.categories, 
-                this.data.products, 
-                this.data.orderDates, 
-                this.data.units
-            ] = await Promise.all(dataPromises);
+            const dataPromises = dataToLoadConfig.map(async (item) => {
+                const cached = OrderSystemStorage.loadAppData(item.key);
+                if (cached && (Date.now() - cached.timestamp < item.ttl)) {
+                    console.log(`Using cached client data for ${item.key}`);
+                    this.data[item.key] = cached.data;
+                } else {
+                    console.log(`Fetching fresh data for ${item.key}`);
+                    const freshData = await OrderSystemAPI.fetchData(item.sheetName);
+                    this.data[item.key] = freshData;
+                    OrderSystemStorage.saveAppData(item.key, freshData);
+                }
+            });
+
+            await Promise.all(dataPromises);
             
             console.log("All data loaded successfully");
             loginBox.querySelector('.login-title').textContent = originalTitle;
             
         } catch (error) {
             loginBox.querySelector('.login-title').textContent = 'เกิดข้อผิดพลาดในการโหลด';
-            throw error;
+            // Attempt to load from cache as a fallback if API fails after initial load
+            dataToLoadConfig.forEach(item => {
+                const cached = OrderSystemStorage.loadAppData(item.key);
+                if (cached) this.data[item.key] = cached.data;
+            });
+            if (!this.data.users || this.data.users.length === 0) { // Critical data check
+                throw error; // Re-throw if critical data (e.g., users) couldn't be loaded at all
+            }
+            console.warn("Loaded data from cache due to API error:", error.message);
+            OrderSystemUI.showNotification("แสดงข้อมูลจากแคชเนื่องจากข้อผิดพลาด API", true);
+            loginBox.querySelector('.login-title').textContent = originalTitle; // Reset title
+        }
+    },
+
+    async loadProductRelatedData() {
+        if (this.data.products && this.data.products.length > 0 &&
+            this.data.categories && this.data.categories.length > 0) {
+            console.log("Products and Categories already loaded or cached.");
+            return; // Already loaded
+        }
+        OrderSystemUI.showLoading(true, 'กำลังโหลดข้อมูลสินค้า...');
+        const productDataConfig = [
+            { key: 'categories', sheetName: 'Categories', ttl: 24 * 60 * 60 * 1000 },
+            { key: 'products', sheetName: 'Products', ttl: 6 * 60 * 60 * 1000 }
+        ];
+        try {
+            const dataPromises = productDataConfig.map(async (item) => {
+                const cached = OrderSystemStorage.loadAppData(item.key);
+                if (cached && (Date.now() - cached.timestamp < item.ttl)) {
+                    this.data[item.key] = cached.data;
+                } else {
+                    const freshData = await OrderSystemAPI.fetchData(item.sheetName);
+                    this.data[item.key] = freshData;
+                    OrderSystemStorage.saveAppData(item.key, freshData);
+                }
+            });
+            await Promise.all(dataPromises);
+            console.log("Products and Categories data loaded.");
+        } catch (error) {
+            console.error("Error loading product related data:", error);
+            OrderSystemUI.showNotification("เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า", true);
+        } finally {
+            OrderSystemUI.showLoading(false);
         }
     },
 
     // Populate department filter dropdown
     populateDepartmentFilter() {
         const deptFilter = document.getElementById('departmentFilter');
+        if (!deptFilter || !this.data.departments || this.data.departments.length === 0) return; // Added check for empty departments
         deptFilter.innerHTML = '<option value="all">ทุกแผนก</option>' + 
             this.data.departments.map(dept => 
                 `<option value="${dept.id}">${dept.name}</option>`
@@ -200,6 +249,21 @@ const OrderSystemStorage = {
     loadUserPreferences() {
         const prefs = localStorage.getItem('userPreferences');
         return prefs ? JSON.parse(prefs) : null;
+    }
+    ,
+    saveAppData(key, data) {
+        try {
+            localStorage.setItem(`appData_${key}`, JSON.stringify({
+                data: data,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.error("Error saving app data to localStorage:", e);
+        }
+    },
+    loadAppData(key) {
+        const saved = localStorage.getItem(`appData_${key}`);
+        return saved ? JSON.parse(saved) : null;
     }
 };
 

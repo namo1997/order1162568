@@ -61,8 +61,9 @@ const OrderSystemCart = {
         OrderSystemStorage.saveCart();
         OrderSystemUI.updateCartBadge();
         this._updateProductCardUI(productId, newQuantity); // Pass only quantity
+        
         // If cart modal is open, re-render it
-        if (document.getElementById('cartModal').style.display === 'block') {
+        if (document.getElementById('cartModal') && document.getElementById('cartModal').style.display === 'block') {
             this.render();
         }
     },
@@ -76,9 +77,9 @@ const OrderSystemCart = {
     decrementProductQuantity(productId) {
         const existingItem = OrderSystem.state.cart.find(item => item.id === productId);
         const currentQuantity = existingItem ? existingItem.quantity : 0;
-        const currentRemark = existingItem ? (existingItem.remark || '') : (document.getElementById(`remark-${productId}`)?.value || '');
+        const remarkToPreserve = existingItem ? (existingItem.remark || '') : ''; // Preserve existing remark
         if (currentQuantity > 0) {
-            this._updateCartItem(productId, currentQuantity - 1, currentRemark);
+            this._updateCartItem(productId, currentQuantity - 1, remarkToPreserve);
         }
     },
 
@@ -144,13 +145,13 @@ const OrderSystemCart = {
                    <input type="text" class="form-input remark-input-modal" style="margin-top: 0.5rem;" 
                           placeholder="เพิ่มหมายเหตุ..." 
                           value="${item.remark || ''}" 
-                          onchange="OrderSystemCart.updateProductRemark(${item.id}, this)">
+                          onchange="OrderSystemCart.updateProductRemark('${item.id}', this)">
                </div>
                <div class="cart-item-controls">
                    <div class="quantity-controls">
-                       <button class="quantity-btn" onclick="OrderSystemCart.decrementProductQuantity(${item.id})">-</button>
+                       <button class="quantity-btn" onclick="OrderSystemCart.decrementProductQuantity('${item.id}')">-</button>
                        <span>${item.quantity}</span>
-                       <button class="quantity-btn" onclick="OrderSystemCart.incrementProductQuantity(${item.id})">+</button>
+                       <button class="quantity-btn" onclick="OrderSystemCart.incrementProductQuantity('${item.id}')">+</button>
                    </div>
                    <div style="font-weight: bold;">${item.unit}</div>
                </div>

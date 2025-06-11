@@ -480,62 +480,98 @@ function doPost(e) {
 
 // Get Users data
 function getUsers() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.USERS;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.USERS);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
-  return data.slice(1).map(row => {
+  const result = data.slice(1).map(row => {
     let obj = {};
     headers.forEach((header, index) => {
       obj[header] = row[index];
     });
     return obj;
   });
+  cache.put(cacheKey, JSON.stringify(result), 21600); // Cache for 6 hours (21600 seconds)
+  return result;
 }
 
 // Get Departments data
 function getDepartments() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.DEPARTMENTS;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.DEPARTMENTS);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
-  return data.slice(1).map(row => {
+  const result = data.slice(1).map(row => {
     let obj = {};
     headers.forEach((header, index) => {
       obj[header] = row[index];
     });
     return obj;
   });
+  cache.put(cacheKey, JSON.stringify(result), 21600);
+  return result;
 }
 
 // Get Categories data
 function getCategories() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.CATEGORIES;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.CATEGORIES);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
-  return data.slice(1).map(row => {
+  const result = data.slice(1).map(row => {
     let obj = {};
     headers.forEach((header, index) => {
       obj[header] = row[index];
     });
     return obj;
   });
+  cache.put(cacheKey, JSON.stringify(result), 21600);
+  return result;
 }
 
 // Get Products data
 function getProducts() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.PRODUCTS;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.PRODUCTS);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
-  return data.slice(1).map(row => {
+  const result = data.slice(1).map(row => {
     let obj = {};
     headers.forEach((header, index) => {
       obj[header] = row[index];
     });
     return obj;
   });
+  cache.put(cacheKey, JSON.stringify(result), 21600); // Cache product data
+  return result;
 }
 
 // Get Orders data with filters
@@ -570,11 +606,18 @@ function getOrders(params) {
 
 // Get Order Dates data
 function getOrderDates() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.ORDER_DATES;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.ORDER_DATES);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
-  return data.slice(1).map(row => {
+  const result = data.slice(1).map(row => {
     let obj = {};
     headers.forEach((header, index) => {
       if (header === 'date' && row[index]) {
@@ -586,16 +629,27 @@ function getOrderDates() {
     });
     return obj;
   });
+  cache.put(cacheKey, JSON.stringify(result), 3600); // Cache order dates for 1 hour
+  return result;
 }
 
 // Get Units data
 function getUnits() {
+  const cache = CacheService.getScriptCache();
+  const cacheKey = SHEETS.UNITS;
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const sheet = ss.getSheetByName(SHEETS.UNITS);
   const data = sheet.getDataRange().getValues();
   
-  return data.slice(1).map(row => ({
+  const result = data.slice(1).map(row => ({
     name: row[0]
   }));
+  cache.put(cacheKey, JSON.stringify(result), 21600);
+  return result;
 }
 
 // Handle order submission
@@ -603,6 +657,7 @@ function handleSubmitOrder(orderData) {
   const sheet = ss.getSheetByName(SHEETS.ORDERS);
   const { orderDate, user, cart, existingOrderId } = orderData;
   
+  CacheService.getScriptCache().remove(SHEETS.ORDERS + (params.userId || '') + (params.orderDate || '')); // Invalidate specific orders cache if any
   // If editing existing order, delete old entries first
   if (existingOrderId) {
     deleteOrdersByOrderId(existingOrderId);
@@ -648,6 +703,7 @@ function handleSubmitOrder(orderData) {
 // Handle order deletion
 function handleDeleteOrder(data) {
   const { orderId } = data;
+  CacheService.getScriptCache().remove(SHEETS.ORDERS + (params.userId || '') + (params.orderDate || '')); // Invalidate specific orders cache
   deleteOrdersByOrderId(orderId);
   
   return ContentService
@@ -675,6 +731,7 @@ function handleCloseDate(data) {
   const dataRange = sheet.getDataRange();
   const values = dataRange.getValues();
   
+  CacheService.getScriptCache().remove(SHEETS.ORDER_DATES); // Invalidate OrderDates cache
   // Find and update the date row
   for (let i = 1; i < values.length; i++) {
     const rowDate = Utilities.formatDate(new Date(values[i][0]), 'GMT+7', 'yyyy-MM-dd');
@@ -696,6 +753,7 @@ function handleUpdateUnits(data) {
   const { units } = data;
   const sheet = ss.getSheetByName(SHEETS.UNITS);
   
+  CacheService.getScriptCache().remove(SHEETS.UNITS); // Invalidate Units cache
   // Clear existing data (except header)
   const lastRow = sheet.getLastRow();
   if (lastRow > 1) {

@@ -80,10 +80,18 @@ const OrderSystemOrders = {
         }
     },
 
-    selectOrderDate(element, date) {
-        if (OrderSystem.state.selectedOrderDate !== date) {
-            this.resetOrderState();
-            // OrderSystemUI.updateCartBadge(); // resetOrderState already calls renderOrderDates which implies cart update if needed
+    async selectOrderDate(element, date) { // Make async
+        const isNewDate = OrderSystem.state.selectedOrderDate !== date;
+        const isEditing = !!OrderSystem.state.existingOrderId;
+
+        if (isNewDate) {
+            if (isEditing) {
+                // If was editing and a new date is selected, clear the edit state
+                // and reset for the new date.
+                OrderSystem.state.existingOrderId = null;
+            }
+            // Always reset for a new date selection if not coming from an edit action for *this* date
+            this.resetOrderState(); // Then reset the cart for the new date
         }
         OrderSystem.state.selectedOrderDate = date;
         document.querySelectorAll('#orderDateGrid .dept-card').forEach(card =>
@@ -96,12 +104,24 @@ const OrderSystemOrders = {
         if(document.getElementById('searchInput')) {
             document.getElementById('searchInput').value = '';
         }
-        this.renderCategories(); // Ensure categories are rendered
+
+        // Load products and categories if not already loaded
+        await OrderSystem.loadProductRelatedData();
+
+        // Now render categories and products
+        this.renderCategories();
         this.renderProducts();
     },
 
     async editOrder(date) {
         OrderSystemUI.showLoading(true, 'กำลังโหลดคำสั่งซื้อเดิม...');
+        // Explicitly set the selectedOrderDate *before* potentially resetting cart
+        // This ensures that if resetOrderState is called, it knows which date context it's in.
+        OrderSystem.state.selectedOrderDate = date;
+        OrderSystem.state.cart = [];
+        OrderSystem.state.existingOrderId = null; // Clear previous edit state
+        OrderSystemUI.updateCartBadge();
+
         try {
             const userOrders = await OrderSystemAPI.fetchData('Orders', {
                 userId: OrderSystem.state.currentUser.id,
@@ -113,7 +133,7 @@ const OrderSystemOrders = {
                     ...OrderSystem.data.products.find(p => p.id === order.productId),
                     quantity: order.quantity,
                     remark: order.remark,
-                    department: order.department // Ensure department is carried over
+                    department: order.department
                 }));
                 OrderSystem.state.existingOrderId = userOrders[0].orderId; // Assuming orderId is consistent for all items in an order
                 OrderSystem.state.selectedOrderDate = date;
@@ -127,8 +147,10 @@ const OrderSystemOrders = {
                 });
 
                 document.getElementById('categorySection').classList.remove('hidden');
-                this.renderCategories(); // Render categories as well
+                this.renderCategories();
                 this.renderProducts();
+                // Ensure the correct date card is visually active
+                this.selectOrderDate(document.querySelector(`#orderDateGrid .dept-card[onclick*="'${date}'"]`), date);
                 OrderSystemUI.updateCartBadge();
                 OrderSystemStorage.saveCart();
                 OrderSystemCart.open();
@@ -253,13 +275,19 @@ const OrderSystemOrders = {
                 historyDiv.innerHTML = '<p>ไม่พบประวัติการสั่งซื้อ</p>';
             } else {
                 historyDiv.innerHTML = sortedDates.slice(0, 10).map(date => `
-                    <div class="history-item">
-                        <div class="history-date">
-                            ${new Date(date).toLocaleDateString('th-TH', {
+                    <div class="history-item" id="history-item-${date}">
+                        <div class="history-item-header">
+                            <div class="history-date">
+                                ${new Date(date).toLocaleDateString('th-TH', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
                             })}
+                            </div>
+                            <button class="action-btn edit-btn" style="font-size: 0.8em; padding: 0.3rem 0.6rem;"
+                                    onclick="OrderSystemOrders.editOrderFromHistory('${date}')">
+                                ดู/แก้ไข
+                            </button>
                         </div>
                         <div class="history-products">
                             ${ordersByDate[date].map(item =>
@@ -275,7 +303,14 @@ const OrderSystemOrders = {
         } finally {
             OrderSystemUI.showLoading(false);
         }
-    }
+    },
+
+    async editOrderFromHistory(date) {
+        // Hide the order history section when editing an order from history
+        const historyDiv = document.getElementById('orderHistory');
+        if (historyDiv) historyDiv.classList.add('hidden');
+        await this.editOrder(date); // Call the existing editOrder function
+    },
 };
 
 // Expose to global for onclick handlers
