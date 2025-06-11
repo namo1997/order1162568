@@ -1,0 +1,1106 @@
+/* ==========================================
+   GLOBAL STYLES
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* ==========================================
+   UTILITIES
+   ========================================== */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================
+   LOADING & ANIMATIONS
+   ========================================== */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.loading-box .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-color: rgba(0,208,156,.3);
+    border-top-color: #00d09c;
+    margin: 0 auto 1rem;
+}
+
+/* ==========================================
+   LOGIN/USER SELECTION PAGE
+   ========================================== */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+    animation: slideUp 0.5s ease-out;
+}
+
+.login-logo {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.login-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #00d09c;
+    box-shadow: 0 0 0 3px rgba(0,208,156,0.1);
+}
+
+.error-message {
+    background: #ff5252;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: none;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* User Selection Grid */
+.users-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem 0;
+}
+
+.user-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.user-card:hover {
+    border-color: #00d09c;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.user-card.admin {
+    border-color: #ff9800;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+}
+
+.user-card.admin:hover {
+    border-color: #ff6b00;
+}
+
+.user-avatar {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.user-dept {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.admin-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff9800;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+/* Scrollbar styling */
+.users-selection-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.users-selection-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.users-selection-grid::-webkit-scrollbar-thumb {
+    background: #00d09c;
+    border-radius: 4px;
+}
+
+.users-selection-grid::-webkit-scrollbar-thumb:hover {
+    background: #00b386;
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+.header {
+    background: linear-gradient(135deg, #00d09c 0%, #00b386 100%);
+    color: white;
+    padding: 1rem 0; /* Default padding */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: padding 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.header.scrolled {
+    padding: 0.5rem 0; /* Shrunken padding */
+    background-color: #009a74; /* Slightly darker shade when scrolled */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.header.scrolled .logo {
+    font-size: 1.2rem; /* Smaller logo */
+}
+
+.header.scrolled .logo span:last-child { /* Hide text part of logo */
+    display: none;
+}
+
+.header.scrolled .nav-btn {
+    padding: 0.4rem 0.8rem; /* Smaller nav buttons */
+    font-size: 0.9rem;
+}
+
+.header.scrolled .header-actions.icons-only .nav-btn span:last-child,
+.header.scrolled .header-actions.icons-only .user-info span:last-child {
+    display: none; /* Hide text in buttons and user info */
+}
+.header.scrolled .header-actions.icons-only {
+    gap: 0.5rem; /* Reduce gap when only icons */
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    transition: font-size 0.3s ease-in-out; /* For logo size transition */
+    gap: 0.5rem;
+}
+
+.header-actions { /* Renamed from header-nav */
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s, padding 0.3s ease-in-out, font-size 0.3s ease-in-out;
+}
+
+.nav-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+.cart-count {
+    background: #ff5722;
+    padding: 0.2rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    animation: pulse 0.3s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+}
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* ==========================================
+   DEPARTMENT/ORDER DATE SECTION
+   ========================================== */
+.department-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.department-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.dept-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 1rem;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 500;
+    position: relative;
+}
+
+.dept-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.dept-card.active {
+    background: linear-gradient(135deg, #00d09c 0%, #00b386 100%);
+}
+
+.dept-card .edit-order-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border: 1px solid white;
+    border-radius: 15px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* ==========================================
+   CATEGORY & PRODUCTS
+   ========================================== */
+.category-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+/* Styles for sticky category section */
+#categorySection.sticky-active {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    /* 'top' will be set by JavaScript based on header height */
+    z-index: 99; /* Below header (z-index: 100) */
+    background-color: #f5f5f5; /* Match body background or use white */
+    padding-top: 1rem; /* Add some padding when sticky */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Shadow to indicate it's layered */
+}
+
+.category-tab {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.category-tab:hover {
+    border-color: #00d09c;
+    transform: translateY(-2px);
+}
+
+.category-tab.active {
+    background: #00d09c;
+    color: white;
+    border-color: #00d09c;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    min-height: 200px;
+}
+
+.products-grid.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.product-card .quantity-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff5722;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    border: 2px solid white;
+    transition: transform 0.2s ease-in-out;
+    transform: scale(0);
+}
+
+.product-card .quantity-badge.visible {
+    transform: scale(1);
+}
+
+.product-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.product-description {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    min-height: 40px;
+}
+
+.product-name-unit-wrapper {
+    margin-bottom: 0.5rem;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    /* Removed margin-bottom as it's handled by wrapper */
+}
+
+.product-footer {
+    display: flex;
+}
+
+.add-to-cart {
+    background: #00d09c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.add-to-cart:hover {
+    background: #00b386;
+    transform: scale(1.05);
+}
+
+/* ==========================================
+   CART MODAL
+   ========================================== */
+.cart-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    animation: fadeIn 0.3s;
+}
+
+.cart-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    margin: 2rem auto;
+    border-radius: 15px;
+    padding: 2rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.close-cart {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    animation: fadeIn 0.3s;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.cart-item-dept {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-btn {
+    background: #f0f0f0;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+    background: #00d09c;
+    color: white;
+}
+
+.cart-total {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e0e0e0;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.checkout-btn {
+    background: linear-gradient(135deg, #00d09c 0%, #00b386 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.checkout-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.checkout-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* ==========================================
+   ADMIN PANEL
+   ========================================== */
+.admin-panel {
+    display: none;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.admin-tab.active {
+    color: #00d09c;
+}
+
+.admin-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #00d09c;
+}
+
+.admin-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+}
+
+.admin-section h3 {
+    margin-bottom: 0.5rem;
+}
+
+.admin-section .small-text {
+    margin-bottom: 1.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Table Styles */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #666;
+}
+
+.admin-table tr:hover {
+    background: #f9f9f9;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+.action-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    margin-right: 0.5rem;
+}
+
+.edit-btn {
+    background: #2196F3;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #1976D2;
+}
+
+.delete-btn {
+    background: #f44336;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #d32f2f;
+}
+
+.add-btn {
+    background: #00d09c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s;
+}
+
+.add-btn:hover {
+    background: #00b386;
+    transform: translateY(-2px);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #00d09c 0%, #00b386 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.login-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.history-btn {
+    background: #2196F3;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.history-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   ORDER HISTORY
+   ========================================== */
+.order-history {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e0e0e0;
+}
+
+.history-date {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.history-products {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* ==========================================
+   NOTIFICATION TOAST
+   ========================================== */
+.notification-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #00d09c;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s;
+    z-index: 1001;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.notification-toast.error {
+    background: #ff5252;
+}
+
+.notification-toast.success {
+    background: #00d09c;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* ==========================================
+   PRINT STYLES
+   ========================================== */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+    #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    #print-area table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12pt;
+        margin-top: 1rem;
+    }
+    #print-area th, #print-area td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+    #print-area h2, #print-area h3, #print-area h4 {
+        margin-bottom: 1rem;
+        color: #000;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+@media (max-width: 768px) {
+    .department-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* ลดขนาด minmax */
+    }
+    
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .admin-table {
+        font-size: 0.9rem;
+    }
+    
+    .header-nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .nav-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .login-box {
+        padding: 2rem 1.5rem;
+    }
+    
+    .users-selection-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}/* ใน css/styles.css */
+
+/* ... CSS อื่นๆ ของคุณ ... */
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.product-unit-inline { /* New class for inline unit */
+    font-size: 0.9em;
+    color: #555;
+    margin-left: 0.3em;
+}
+
+.product-card-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute space */
+    width: 100%; /* Make controls take full width of footer */
+}
+
+.product-card-controls .quantity-display {
+    /* flex-grow: 1; /* Allow quantity display to take available space if needed */
+    text-align: center;
+}
+
+.quantity-btn.card-quantity-btn { /* ใช้ชื่อคลาสที่เฉพาะเจาะจงมากขึ้น */
+    background-color: #e0e0e0;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px; /* เพิ่ม padding */
+    font-size: 1.2em;  /* เพิ่มขนาด font */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 36px; /* เพิ่มความกว้างขั้นต่ำ */
+    height: 36px;   /* เพิ่มความสูง */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn.card-quantity-btn.decrement-btn {
+    /* Specific styles for decrement if needed, e.g., order: -1 in flex for older browsers */
+}
+
+.quantity-btn.card-quantity-btn.increment-btn {
+    /* Specific styles for increment if needed, e.g., order: 1 in flex */
+}
+
+.quantity-btn.card-quantity-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.quantity-btn.card-quantity-btn:active {
+    background-color: #c0c0c0;
+}
+
+.quantity-display {
+    font-size: 1em;
+    font-weight: bold;
+    min-width: 20px; /* ให้มีพื้นที่สำหรับตัวเลข */
+    text-align: center;
+    padding: 0 5px;
+}
+
+/* อาจจะต้องปรับปรุง quantity-badge เดิมถ้ายังใช้อยู่ หรือเปลี่ยนไปใช้ quantity-display แทน */
+.quantity-badge { /* ถ้า quantity-display ทำหน้าที่แทนแล้ว ส่วนนี้อาจจะไม่จำเป็น */
+    /* ... สไตล์เดิม ... */
+    /* ถ้า quantity-display คือตัวแสดงหลัก อาจจะซ่อน badge นี้ถ้าไม่ต้องการให้ซ้อนกัน */
+}
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-mode .header {
+    background: linear-gradient(135deg, #2d3561 0%, #1a1f3a 100%);
+}
+
+.dark-mode .product-card,
+.dark-mode .admin-section,
+.dark-mode .department-section {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+.dark-mode .form-input {
+    background: #3d3d3d;
+    border-color: #4d4d4d;
+    color: #e0e0e0;
+}
+
+.dark-mode .category-tab {
+    background: #3d3d3d;
+    border-color: #4d4d4d;
+    color: #e0e0e0;
+}
+
+.dark-mode .category-tab.active {
+    background: #00d09c;
+    color: white;
+}

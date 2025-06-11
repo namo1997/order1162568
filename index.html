@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสั่งของภายในองค์กร</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-box">
+            <div class="loading-spinner"></div>
+            <div id="loadingText">กำลังโหลด...</div>
+        </div>
+    </div>
+
+    <!-- User Selection Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box" style="max-width: 600px;">
+            <div class="login-logo">👥</div>
+            <h2 class="login-title">เลือกชื่อของคุณ</h2>
+            <div id="loginError" class="error-message"></div>
+            
+            <!-- Department Filter -->
+            <div class="form-group">
+                <label class="form-label">กรองตามแผนก</label>
+                <select class="form-input" id="departmentFilter" onchange="OrderSystemAuth.filterUsersByDepartment()">
+                    <option value="all">ทุกแผนก</option>
+                </select>
+            </div>
+            
+            <!-- Search Box -->
+            <div class="form-group">
+                <input type="text" class="form-input" id="userSearch" placeholder="🔍 ค้นหาชื่อ..." onkeyup="OrderSystemAuth.searchUsers()">
+            </div>
+            
+            <!-- Users Grid -->
+            <div id="usersGrid" class="users-selection-grid">
+                <!-- User cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo" onclick="goHome()" style="cursor: pointer;" title="กลับไปหน้าแรก">
+                    <span>📦</span>
+                    <span>ระบบสั่งของภายใน</span>
+                </div>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <span>👤</span>
+                        <span id="currentUser">User</span>
+                    </div>
+                    <button class="nav-btn" onclick="openCart()">
+                        <span>🛒 ตะกร้า</span>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <button id="adminBtn" class="nav-btn hidden" onclick="toggleAdminPanel()">
+                        <span>⚙️ ตั้งค่า</span>
+                    </button>
+                    <button class="nav-btn" onclick="toggleDarkMode()">
+                        <span id="darkModeIcon">🌙</span>
+                    </button>
+                    <button class="nav-btn" onclick="logout()">
+                        <span>🚪 ออกจากระบบ</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Order Section -->
+            <div id="orderSection">
+                <div class="department-section">
+                    <h2>1. เลือกวันที่สั่งซื้อ</h2>
+                    <div class="department-grid" id="orderDateGrid">
+                        <!-- Order Dates will be dynamically inserted here -->
+                    </div>
+                    <button class="history-btn" onclick="toggleOrderHistory()">📋 ดูประวัติการสั่งซื้อ</button>
+                    <div id="orderHistory" class="order-history hidden"></div>
+                </div>
+
+                <div id="categorySection" class="hidden">
+                    <h2>2. เลือกสินค้า</h2>
+                    <div class="category-tabs" id="categoryTabs">
+                        <!-- Categories will be dynamically inserted here -->
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <input type="text" class="form-input" id="searchInput" placeholder="🔍 ค้นหาชื่อสินค้า...">
+                    </div>
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Products will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="adminPanel" class="admin-panel">
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="showAdminTab('manageDates')">จัดการวันสั่งซื้อ</button>
+                    <button class="admin-tab" onclick="showAdminTab('summary')">สรุปยอดสั่งซื้อ</button>
+                </div>
+
+                <div id="adminContent">
+                    <!-- Admin content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Modal -->
+        <div class="cart-modal" id="cartModal">
+            <div class="cart-content">
+                <div class="cart-header">
+                    <h2 id="cartTitle">ตะกร้าสินค้า</h2>
+                    <button class="close-cart" onclick="closeCart()">&times;</button>
+                </div>
+                <div id="cartItems">
+                    <!-- Cart items will be dynamically inserted here -->
+                </div>
+                <div class="cart-total">
+                    <button id="deleteOrderBtn" class="delete-btn hidden" onclick="deleteCurrentOrder()">ยกเลิกคำสั่งซื้อ</button>
+                    <button id="checkoutBtn" class="checkout-btn">ยืนยันการสั่งซื้อ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Area -->
+    <div id="print-area"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/admin.js"></script>
+    <script>
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            OrderSystem.init();
+        });
+    </script>
+</body>
+</html>
