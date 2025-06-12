@@ -25,7 +25,7 @@ const OrderSystemAdmin = {
         switch(tab) {
             case 'manageDates': this.renderManageDates(); break;
             case 'summary': this.renderOrderSummary(); break;
-            // Removed other cases as per requirement
+            case 'branches': this.renderBranches(); break; // เพิ่มบรรทัดนี้
         }
     },
 
@@ -369,6 +369,32 @@ const OrderSystemAdmin = {
                 </table>
             </div>
         `;
+    },
+
+    renderBranches() {
+      const content = document.getElementById('adminContent');
+      content.innerHTML = `
+        <div class="admin-section">
+          <h3>ข้อมูลสาขา</h3>
+          <p class="small-text">ข้อมูลนี้ถูกดึงมาจาก Google Sheet โดยตรง หากต้องการแก้ไข กรุณาไปที่ไฟล์ Sheet</p>
+          <table class="admin-table">
+            <thead><tr><th>รหัส</th><th>ชื่อสาขา</th><th>รหัสสาขา</th><th>ที่อยู่</th><th>เบอร์โทร</th><th>ผู้จัดการ</th><th>สถานะ</th></tr></thead>
+            <tbody>
+              ${OrderSystem.data.branches.map(branch => `
+                <tr>
+                  <td>${branch.id}</td>
+                  <td>${branch.name}</td>
+                  <td>${branch.code}</td>
+                  <td>${branch.address}</td>
+                  <td>${branch.phone}</td>
+                  <td>${branch.manager}</td>
+                  <td><span style="color: ${branch.status === 'active' ? 'green' : 'red'};">${branch.status === 'active' ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 };
 

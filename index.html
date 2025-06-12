@@ -30,6 +30,14 @@
                 </select>
             </div>
             
+            <!-- Branch Filter - เพิ่มส่วนนี้ -->
+            <div class="form-group">
+              <label class="form-label">กรองตามสาขา</label>
+              <select class="form-input" id="branchFilter" onchange="OrderSystemAuth.filterUsersByBranch()">
+                <option value="all">ทุกสาขา</option>
+              </select>
+            </div>
+            
             <!-- Search Box -->
             <div class="form-group">
                 <input type="text" class="form-input" id="userSearch" placeholder="🔍 ค้นหาชื่อ..." onkeyup="OrderSystemAuth.searchUsers()">
@@ -103,6 +111,7 @@
                 <div class="admin-tabs">
                     <button class="admin-tab active" onclick="showAdminTab('manageDates')">จัดการวันสั่งซื้อ</button>
                     <button class="admin-tab" onclick="showAdminTab('summary')">สรุปยอดสั่งซื้อ</button>
+                    <button class="admin-tab" onclick="showAdminTab('branches')">ข้อมูลสาขา</button> <!-- เพิ่มบรรทัดนี้ -->
                 </div>
 
                 <div id="adminContent">

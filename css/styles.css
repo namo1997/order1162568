@@ -195,6 +195,12 @@ body {
     color: #666;
 }
 
+.user-branch {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 0.2rem;
+}
+
 .admin-badge {
     position: absolute;
     top: 5px;
@@ -654,6 +660,12 @@ body {
 .quantity-btn:hover {
     background: #00d09c;
     color: white;
+}
+
+.branch-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.2rem;
 }
 
 .cart-total {
